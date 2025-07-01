@@ -3,11 +3,11 @@ import 'package:tugas16/helper/preference.dart';
 import 'package:tugas16/view/api/user_api.dart';
 import 'package:tugas16/view/login_screen.dart';
 import 'package:tugas16/view/menu drawer/deletbuku.dart';
-import 'package:tugas16/view/menu drawer/kembalikanbuku.dart';
-import 'package:tugas16/view/menu drawer/pinjambuku.dart';
-import 'package:tugas16/view/menu drawer/riwayatpinjaman.dart';
 import 'package:tugas16/view/model/berhasilgetbuku.dart';
-import 'package:tugas16/view/tambahbuku.dart';
+import 'package:tugas16/view/navigator/kembalikanbuku.dart';
+import 'package:tugas16/view/navigator/pinjambuku.dart';
+import 'package:tugas16/view/navigator/riwayatpinjaman.dart';
+import 'package:tugas16/view/navigator/tambahbuku.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -38,17 +38,10 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
-  final List<String> _titles = [
-    'Beranda',
-    'Tambah Buku',
-    'Pinjam Buku',
-    'Kembalikan Buku',
-    'Riwayat Pinjaman',
-  ];
+  final List<String> _titles = ['Beranda', 'Pinjam', 'Kembalikan', 'Riwayat'];
 
   final List<IconData> _icons = [
     Icons.home,
-    Icons.add_box,
     Icons.book_online,
     Icons.assignment_return,
     Icons.history,
@@ -56,7 +49,6 @@ class _MainScreenState extends State<MainScreen> {
 
   late final List<Widget> _pages = [
     DaftarBuku(key: _homeKey),
-
     const Pinjambuku(),
     const Kembalikanbuku(),
     const RiwayatScreen(),
@@ -118,7 +110,7 @@ class _MainScreenState extends State<MainScreen> {
 
                   _drawerItem(
                     icon: Icons.add,
-                    text: "Tambah Data",
+                    text: "Tambah Buku",
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -228,8 +220,12 @@ class DaftarBukuState extends State<DaftarBuku> {
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
                   title: Text(buku.title),
-                  subtitle: Text(
-                    "Penulis: \${buku.author} | Stok: \${buku.stock}",
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Penulis: ${buku.author}"),
+                      Text("Stok: ${buku.stock}"),
+                    ],
                   ),
                 ),
               );

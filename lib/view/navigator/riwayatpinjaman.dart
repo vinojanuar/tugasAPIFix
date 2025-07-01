@@ -23,15 +23,7 @@ class _RiwayatScreenState extends State<RiwayatScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: const Text(
-          'Riwayat Peminjaman',
-          style: TextStyle(color: Colors.black),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-        elevation: 1,
-      ),
+
       body: FutureBuilder<Riwayatpinjambuku>(
         future: riwayat,
         builder: (context, snapshot) {

@@ -42,12 +42,7 @@ class _PinjambukuState extends State<Pinjambuku> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text("Pinjam Buku", style: TextStyle(color: Colors.black)),
-        iconTheme: const IconThemeData(color: Colors.black),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
+
       body: FutureBuilder<List<GetBuku>>(
         future: _bukuFuture,
         builder: (context, snapshot) {
@@ -140,9 +135,9 @@ class _PinjambukuState extends State<Pinjambuku> {
                             ),
                           ),
                           TextButton(
-                            onPressed: () {
-                              Navigator.pop(ctx);
+                            onPressed: () async {
                               _pinjamBuku(buku);
+                              Navigator.pop(ctx);
                             },
                             child: const Text(
                               "Pinjam",

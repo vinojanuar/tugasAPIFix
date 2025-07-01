@@ -69,15 +69,7 @@ class _KembalikanbukuState extends State<Kembalikanbuku> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text(
-          "Kembalikan Buku",
-          style: TextStyle(color: Colors.black),
-        ),
-        iconTheme: const IconThemeData(color: Colors.black),
-        backgroundColor: Colors.white,
-        elevation: 1,
-      ),
+
       body: isLoading
           ? const Center(child: CircularProgressIndicator(color: Colors.black))
           : daftarPinjaman.isEmpty

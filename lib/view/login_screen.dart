@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tugas16/helper/preference.dart';
 import 'package:tugas16/view/api/user_api.dart';
-import 'package:tugas16/view/navigator/buttomnavigator.dart';
+import 'package:tugas16/view/navigator/mainScreen.dart';
 import 'package:tugas16/view/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
