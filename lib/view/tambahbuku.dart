@@ -50,7 +50,7 @@ class _TambahBukuScreenState extends State<TambahBukuScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Tambah Buku"),
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

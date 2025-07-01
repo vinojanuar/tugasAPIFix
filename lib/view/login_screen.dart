@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tugas16/helper/preference.dart';
 import 'package:tugas16/view/api/user_api.dart';
-import 'package:tugas16/view/home_screen.dart';
 import 'package:tugas16/view/navigator/buttomnavigator.dart';
 import 'package:tugas16/view/register_screen.dart';
 
@@ -30,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (token != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     }
   }
@@ -63,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (context) => const BottomNavigator()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
         (route) => false,
       );
     } else if (res["errors"] != null) {

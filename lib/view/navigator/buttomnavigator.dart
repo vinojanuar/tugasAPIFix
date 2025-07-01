@@ -2,29 +2,41 @@ import 'package:flutter/material.dart';
 import 'package:tugas16/helper/preference.dart';
 import 'package:tugas16/view/api/user_api.dart';
 import 'package:tugas16/view/login_screen.dart';
-import 'package:tugas16/view/model/berhasilgetbuku.dart';
+import 'package:tugas16/view/menu drawer/deletbuku.dart';
 import 'package:tugas16/view/menu drawer/kembalikanbuku.dart';
 import 'package:tugas16/view/menu drawer/pinjambuku.dart';
 import 'package:tugas16/view/menu drawer/riwayatpinjaman.dart';
+import 'package:tugas16/view/model/berhasilgetbuku.dart';
+import 'package:tugas16/view/tambahbuku.dart';
 
-class BottomNavigator extends StatefulWidget {
-  const BottomNavigator({super.key});
+class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
 
   @override
-  State<BottomNavigator> createState() => _BottomNavigatorState();
+  State<MainScreen> createState() => _MainScreenState();
 }
 
-class _BottomNavigatorState extends State<BottomNavigator> {
+class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
-  final GlobalKey<_DaftarBukuState> _homeKey = GlobalKey<_DaftarBukuState>();
+  String userName = 'Nama Pengguna';
+  String userEmail = 'email@pengguna.com';
+  final GlobalKey<DaftarBukuState> _homeKey = GlobalKey<DaftarBukuState>();
 
-  late final List<Widget> _pages = [
-    DaftarBuku(key: _homeKey),
-    const TambahBukuScreen(),
-    const Pinjambuku(),
-    const Kembalikanbuku(),
-    const RiwayatScreen(),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    loadUserProfile();
+  }
+
+  Future<void> loadUserProfile() async {
+    final name = await PreferenceHandler.getUserName() ?? 'Nama Pengguna';
+    final email =
+        await PreferenceHandler.getUserEmail() ?? 'email@pengguna.com';
+    setState(() {
+      userName = name;
+      userEmail = email;
+    });
+  }
 
   final List<String> _titles = [
     'Beranda',
@@ -40,6 +52,14 @@ class _BottomNavigatorState extends State<BottomNavigator> {
     Icons.book_online,
     Icons.assignment_return,
     Icons.history,
+  ];
+
+  late final List<Widget> _pages = [
+    DaftarBuku(key: _homeKey),
+
+    const Pinjambuku(),
+    const Kembalikanbuku(),
+    const RiwayatScreen(),
   ];
 
   @override
@@ -62,6 +82,71 @@ class _BottomNavigatorState extends State<BottomNavigator> {
               ]
             : null,
       ),
+      drawer: Drawer(
+        child: Column(
+          children: [
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(color: Colors.white),
+              currentAccountPicture: const CircleAvatar(
+                backgroundColor: Colors.black,
+                child: Icon(Icons.person, size: 40, color: Colors.white),
+              ),
+              accountName: Text(
+                userName,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                  fontSize: 16,
+                ),
+              ),
+              accountEmail: Text(
+                userEmail,
+                style: const TextStyle(color: Colors.black, fontSize: 14),
+              ),
+            ),
+            Expanded(
+              child: ListView(
+                children: [
+                  _drawerItem(
+                    icon: Icons.delete_forever,
+                    text: "Delete Buku",
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const Deletbuku()),
+                    ),
+                  ),
+
+                  _drawerItem(
+                    icon: Icons.add,
+                    text: "Tambah Data",
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const TambahBukuScreen(),
+                      ),
+                    ),
+                  ),
+                  const Divider(),
+                  _drawerItem(
+                    icon: Icons.logout_outlined,
+                    text: "Logout",
+                    onTap: () async {
+                      await PreferenceHandler.removeToken();
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                        (route) => false,
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -79,16 +164,31 @@ class _BottomNavigatorState extends State<BottomNavigator> {
       ),
     );
   }
+
+  Widget _drawerItem({
+    required IconData icon,
+    required String text,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.black),
+      title: Text(
+        text,
+        style: const TextStyle(color: Colors.black, fontSize: 16),
+      ),
+      onTap: onTap,
+    );
+  }
 }
 
 class DaftarBuku extends StatefulWidget {
   const DaftarBuku({super.key});
 
   @override
-  State<DaftarBuku> createState() => _DaftarBukuState();
+  DaftarBukuState createState() => DaftarBukuState();
 }
 
-class _DaftarBukuState extends State<DaftarBuku> {
+class DaftarBukuState extends State<DaftarBuku> {
   late Future<List<GetBuku>> _bukuFuture;
 
   @override
@@ -111,7 +211,7 @@ class _DaftarBukuState extends State<DaftarBuku> {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text("Error: ${snapshot.error}"));
+          return Center(child: Text("Terjadi kesalahan: \${snapshot.error}"));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(child: Text("Tidak ada buku tersedia"));
         }
@@ -129,7 +229,7 @@ class _DaftarBukuState extends State<DaftarBuku> {
                 child: ListTile(
                   title: Text(buku.title),
                   subtitle: Text(
-                    "Penulis: ${buku.author} | Stok: ${buku.stock}",
+                    "Penulis: \${buku.author} | Stok: \${buku.stock}",
                   ),
                 ),
               );
@@ -137,95 +237,6 @@ class _DaftarBukuState extends State<DaftarBuku> {
           ),
         );
       },
-    );
-  }
-}
-
-class TambahBukuScreen extends StatefulWidget {
-  const TambahBukuScreen({super.key});
-
-  @override
-  State<TambahBukuScreen> createState() => _TambahBukuScreenState();
-}
-
-class _TambahBukuScreenState extends State<TambahBukuScreen> {
-  final _titleController = TextEditingController();
-  final _authorController = TextEditingController();
-  final _stockController = TextEditingController();
-
-  void _submit() async {
-    final title = _titleController.text.trim();
-    final author = _authorController.text.trim();
-    final stock = _stockController.text.trim();
-
-    if (title.isEmpty || author.isEmpty || stock.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Semua field harus diisi")));
-      return;
-    }
-
-    try {
-      final buku = await UserService().postbuku(
-        title: title,
-        author: author,
-        stock: stock,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Buku ditambahkan: ${buku.title}")),
-      );
-      // Navigator.pop(context);
-    } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Gagal menambahkan buku: $e")));
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            _buildInput("Judul", _titleController),
-            const SizedBox(height: 10),
-            _buildInput("Penulis", _authorController),
-            const SizedBox(height: 10),
-            _buildInput(
-              "Stok",
-              _stockController,
-              keyboardType: TextInputType.number,
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _submit,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.black),
-              child: const Text(
-                "Simpan",
-                style: TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInput(
-    String label,
-    TextEditingController controller, {
-    TextInputType? keyboardType,
-  }) {
-    return TextField(
-      controller: controller,
-      keyboardType: keyboardType,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-      ),
     );
   }
 }
